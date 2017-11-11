@@ -1,34 +1,49 @@
 ---
 title: "Recommender Systems"
-author: "Michael D'Acampora"
+author: "Michael D'Acampora and Kai Lukowiak"
 date: "November 10, 2017"
-output: html_document
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
 ---
 
-
-iHeartRadio is a free broadcast and internet radio platform owned by iHeartMedia, Inc. and was founded in April 2008 as the website iheartmusic.com. As of 2017 iHeartRadio functions as a music recommender system and is the national umbrella brand for iHeartMedia's radio network aggregating its over 850 local iHeartMedia radio stations across the United States, as well as hundreds of other stations from various other media.
+iHeartRadio is a free broadcast and internet radio platform owned by intermediary, Inc. and was founded in April 2008 as the website iheartmusic.com. As of 2017 iHeartRadio functions as a music recommender system and is the national umbrella brand for iHeartMedia's radio network aggregating its over 850 local iHeartMedia radio stations across the United States, as well as hundreds of other stations from various other media.
 
 
 ![](ScenarioDesign.png)
 
-
+It does not make sense to perform the scenario design twice because iHeart has not real benefit to pushing certain songs. This is in contrast to Amazon or Netflix who may wish to push higher margin or exclusive content. 
 
 ##Who are the target users?
 iHeart's target users are all age groups who are looking for a customized music experience.
 
 
-
 ##What are their key goals?
 Ultimately key goals would be to provide an experience worth paying  $5 - $10 per month for, depending on service level. There are free live and artist-based radio stations which are recommended based on your genre choices. There is also a free 'MY Favorites Radio' station where you can like and dislike tracks that is a slightly more customized feature.
 
-What is is provided as part of the paid subscription is a more customized, commercial-free music experience similair to Spotify or Pandora.
-
-
+What is is provided as part of the paid subscription is a more customized, commercial-free music experience similar to Spottily or Pandora.
 
 ##How can you help them accomplish those goals?
-As of right now the iHeartRadio player has a like/dislike rating tool used on songs playing on live and customized radio stations. Liking or disliking songs for all live stations provides feedback to the station being played. Liking a song on customized stations will have it and songs like it played more often. Disliking a song on customized stations means the song will not be played again. These data are used to personalize users' 'My Favorites Radio' station. As My Favorites Radio learns a user's music taste over time, it adds various bonus tracks into the mix. 
-
-The method seems fairly simplistic and seems like a more compolex machine learning algoritm or neural net could be implemented to understand in better detail a listeners taste, which could result in higher subscription rates.
+As of right now the iHeartRadio player has a like/dislike rating tool used on songs playing on live and customized radio stations. Liking or disliking songs for all live stations provides feedback to the station being played. Liking a song on customized stations will have it and songs like it played more often. Disliking a song on customized stations means the song will not be played again and similar songs, based on other users will also be played less. These data are used to personalize users' 'My Favorites Radio' station. As My Favorites Radio learns a user's music taste over time, it adds various bonus tracks into the mix. 
 
 
 
+## Reverse Engineer.
+Many reccomender systems normalize the data by using some form of the Pearson Correlation Coefficient:
+
+\[
+r = \frac{\Sigma_{i=1}^n (x_i - \bar{x})(y_i-\bar{y})}{\sqrt{\Sigma_{i=1}^n(x_i-\bar{x})\sqrt{\Sigma_{i=1}^n(y_i-\bar{y})}}}
+\]
+
+iHeart does not have this issue since choices are binary. 
+
+Instead, they rely on KNN/Other Eucludian distance metrics. (Ask your friend.)
+
+What does the matrix of users look like? E.g., are rows users and columns songs? 
+
+
+
+## Improvements:
+
+Add geo location to the muisic recomender. Thus, in the library a user might be reccomended classical music, in the gym, electronic, at dinner, jazz, and while driving, classic rock. This would better taylor users preferences and allow them to downvote songs that they didn't want at that geo-temporal location but might otherwise enjoy.
