@@ -58,16 +58,13 @@ JZtoK
 
 Thus, we can see that Jay-Z and Kanyey are much more simmilar than Radio Head. 
 
-This method has the advantage of not caring where the centre is and scaling better to high demensional space than KNN would. 
+This method has the advantage of not caring where the centre is. However, it can still suffer from high dimensionality. To combat this iHeart uses matrix factorization. 
 
+The number of dimensions is arbitrary but should be lower. In the example I am referencing, they chose 50. 
 
-Also, 
+Dimensionality reduction can be performed with any number of techniques such as principal component analysis, in iHeart's case, they use [sigular value decomposition](https://en.wikipedia.org/wiki/Singular-value_decomposition). 
 
-Instead, they rely on KNN/Other Eucludian distance metrics. (Ask your friend.)
-
-What does the matrix of users look like? E.g., are rows users and columns songs? 
-
-
+This analysis is not meant to be an exhaustive exploration but instead an introductuion to some of the techniques used. 
 
 ## Improvements:
 
