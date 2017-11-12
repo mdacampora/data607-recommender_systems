@@ -30,6 +30,7 @@ As of right now the iHeartRadio player has a like/dislike rating tool used on so
 
 
 ## Reverse Engineer.
+
 Many reccomender systems normalize the data by using some form of the Pearson Correlation Coefficient:
 
 \[
@@ -38,11 +39,32 @@ r = \frac{\Sigma_{i=1}^n (x_i - \bar{x})(y_i-\bar{y})}{\sqrt{\Sigma_{i=1}^n(x_i-
 
 iHeart does not have this issue since choices are binary. 
 
-Instead, they rely on KNN/Other Eucludian distance metrics. (Ask your friend.)
+Also, iHeart has a problem in that most users don't rate most artists. iHeart decided to use users' listening habbits instead. Imagine a world with 3 artists and two listeners. The artists are Jay-Z, Kanyey and Radio Head. See [this](http://www.benfrederickson.com/distance-metrics/) for a more indepth explanation. The names of the listeners are John and Marry. If Marry listenst to Radio Head 15 times and John listens to Radio Head once if we graph John on the y axis and Marry on the X, the coordinates of the point will be (17,1). Let's say the points for Jay-Z are (2, 7) and Kanyey are (1, 12)
 
-What does the matrix of users look like? E.g., are rows users and columns songs? 
+```{r}
+angle <- function(x,y){
+  dot.prod <- t(x)%*%y # To allow for math 
+  norm.x <- norm(t(x),type="2")
+  norm.y <- norm(y,type="2")
+  theta <- acos(dot.prod / (norm.x * norm.y))
+  as.numeric(theta)
+}
 
+JZtoRH = angle(c(17,1), c(2,7))
+JZtoRH
+JZtoK = angle(c(1,12), c(2,7))
+JZtoK
+```
 
+Thus, we can see that Jay-Z and Kanyey are much more simmilar than Radio Head. 
+
+This method has the advantage of not caring where the centre is. However, it can still suffer from high dimensionality. To combat this iHeart uses matrix factorization. 
+
+The number of dimensions is arbitrary but should be lower. In the example I am referencing, they chose 50. 
+
+Dimensionality reduction can be performed with any number of techniques such as principal component analysis, in iHeart's case, they use [sigular value decomposition](https://en.wikipedia.org/wiki/Singular-value_decomposition). 
+
+This analysis is not meant to be an exhaustive exploration but instead an introductuion to some of the techniques used. 
 
 ## Improvements:
 
