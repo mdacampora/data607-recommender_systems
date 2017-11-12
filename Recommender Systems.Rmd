@@ -1,47 +1,44 @@
 ---
 title: "Recommender Systems"
-author: "Michael D'Acampora and Kai Lukowiak"
+author: "Michael D'Acampora & Kai Lukowiak"
 date: "November 10, 2017"
-output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+output: html_document
 ---
 
-iHeartRadio is a free broadcast and internet radio platform owned by intermediary, Inc. and was founded in April 2008 as the website iheartmusic.com. As of 2017 iHeartRadio functions as a music recommender system and is the national umbrella brand for iHeartMedia's radio network aggregating its over 850 local iHeartMedia radio stations across the United States, as well as hundreds of other stations from various other media.
+
+iHeartRadio is a free broadcast and internet radio platform owned by iHeartMedia, Inc. and was founded in April 2008 as the website iheartmusic.com. As of 2017 iHeartRadio functions as a music recommender system and is the national umbrella brand for iHeartMedia's radio network aggregating its over 850 local iHeartMedia radio stations across the United States, as well as hundreds of other stations from various other media.
 
 
 ![](ScenarioDesign.png)
 
-It does not make sense to perform the scenario design twice because iHeart has not real benefit to pushing certain songs. This is in contrast to Amazon or Netflix who may wish to push higher margin or exclusive content. 
 
-##Who are the target users?
+
+It does not make sense to perform the scenario design twice because iHeart has not real benefit to pushing certain songs. This is in contrast to Amazon or Netflix who may wish to push higher margin or exclusive content.
+
+##Who are the target users? 
+
 iHeart's target users are all age groups who are looking for a customized music experience.
 
+##What are their key goals? 
 
-##What are their key goals?
-Ultimately key goals would be to provide an experience worth paying  $5 - $10 per month for, depending on service level. There are free live and artist-based radio stations which are recommended based on your genre choices. There is also a free 'MY Favorites Radio' station where you can like and dislike tracks that is a slightly more customized feature.
+Ultimately key goals would be to provide an experience worth paying $5 - $10 per month for, depending on service level. There are free live and artist-based radio stations which are recommended based on your genre choices. There is also a free 'MY Favorites Radio' station where you can like and dislike tracks that is a slightly more customized feature.
 
-What is is provided as part of the paid subscription is a more customized, commercial-free music experience similar to Spottily or Pandora.
+What is is provided as part of the paid subscription is a more customized, commercial-free music experience similar to Spotify or Pandora.
 
-##How can you help them accomplish those goals?
-As of right now the iHeartRadio player has a like/dislike rating tool used on songs playing on live and customized radio stations. Liking or disliking songs for all live stations provides feedback to the station being played. Liking a song on customized stations will have it and songs like it played more often. Disliking a song on customized stations means the song will not be played again and similar songs, based on other users will also be played less. These data are used to personalize users' 'My Favorites Radio' station. As My Favorites Radio learns a user's music taste over time, it adds various bonus tracks into the mix. 
+##How can you help them accomplish those goals? 
 
+As of right now the iHeartRadio player has a like/dislike rating tool used on songs playing on live and customized radio stations. Liking or disliking songs for all live stations provides feedback to the station being played. Liking a song on customized stations will have it and songs like it played more often. Disliking a song on customized stations means the song will not be played again and similar songs, based on other users will also be played less. These data are used to personalize users' 'My Favorites Radio' station. As My Favorites Radio learns a user's music taste over time, it adds various bonus tracks into the mix.
 
-
-## Reverse Engineer.
+##Reverse Engineer.
 
 Many reccomender systems normalize the data by using some form of the Pearson Correlation Coefficient:
 
-\[
-r = \frac{\Sigma_{i=1}^n (x_i - \bar{x})(y_i-\bar{y})}{\sqrt{\Sigma_{i=1}^n(x_i-\bar{x})\sqrt{\Sigma_{i=1}^n(y_i-\bar{y})}}}
-\]
+[ r = \frac{\Sigma_{i=1}^n (x_i - \bar{x})(y_i-\bar{y})}{\sqrt{\Sigma_{i=1}^n(x_i-\bar{x})\sqrt{\Sigma_{i=1}^n(y_i-\bar{y})}}} ]
 
-iHeart does not have this issue since choices are binary. 
+iHeart does not have this issue since choices are binary.
 
-Also, iHeart has a problem in that most users don't rate most artists. iHeart decided to use users' listening habbits instead. Imagine a world with 3 artists and two listeners. The artists are Jay-Z, Kanyey and Radio Head. See [this](http://www.benfrederickson.com/distance-metrics/) for a more indepth explanation. The names of the listeners are John and Marry. If Marry listenst to Radio Head 15 times and John listens to Radio Head once if we graph John on the y axis and Marry on the X, the coordinates of the point will be (17,1). Let's say the points for Jay-Z are (2, 7) and Kanyey are (1, 12)
+Also, iHeart has a problem in that most users don't rate most artists. iHeart decided to use users' listening habits instead. Imagine a world with three artists and two listeners. The artists are Jay-Z, Kanye West and Radiohead. See <a href="http://www.benfrederickson.com/distance-metrics/" target="_blank">this</a> for a more in-depth explanation. The names of the listeners are John and Mary. If Mary listens to Radiohead 15 times and John listens to Radiohead once; we can graph John on the y-axis and Mary on the X-axis, the coordinates of the Radiohead point will be (17,1). Let's say the points for Jay-Z are (2, 7) and Kanye West are (1, 12)
 
-```{r}
 angle <- function(x,y){
   dot.prod <- t(x)%*%y # To allow for math 
   norm.x <- norm(t(x),type="2")
@@ -54,18 +51,16 @@ JZtoRH = angle(c(17,1), c(2,7))
 JZtoRH
 JZtoK = angle(c(1,12), c(2,7))
 JZtoK
-```
+Thus, we can see that Jay-Z and Kanye West are much more simmilar than Radiohead.
 
-Thus, we can see that Jay-Z and Kanyey are much more simmilar than Radio Head. 
+This method has the advantage of not caring where the center is. However, it can still suffer from high dimensionality. To combat this iHeart uses matrix factorization.
 
-This method has the advantage of not caring where the centre is. However, it can still suffer from high dimensionality. To combat this iHeart uses matrix factorization. 
+The number of dimensions is arbitrary but should be lower. In the referenced example, they chose 50.
 
-The number of dimensions is arbitrary but should be lower. In the example I am referencing, they chose 50. 
+Dimensionality reduction can be performed with any number of techniques such as principal component analysis. In iHeart's case, they use sigular value decomposition.
 
-Dimensionality reduction can be performed with any number of techniques such as principal component analysis, in iHeart's case, they use [sigular value decomposition](https://en.wikipedia.org/wiki/Singular-value_decomposition). 
+This analysis is not meant to be an exhaustive exploration but instead an introduction to some of the techniques used.
 
-This analysis is not meant to be an exhaustive exploration but instead an introductuion to some of the techniques used. 
+##Improvements:
 
-## Improvements:
-
-Add geo location to the muisic recomender. Thus, in the library a user might be reccomended classical music, in the gym, electronic, at dinner, jazz, and while driving, classic rock. This would better taylor users preferences and allow them to downvote songs that they didn't want at that geo-temporal location but might otherwise enjoy.
+Add geo location to the muisic recommender. Thus, in the library a user might be recommended classical music, in the gym, electronic, at dinner, jazz, and while driving, classic rock. This would better tailor users' preferences and allow them to downvote songs that they didn't want at that geo-temporal location but might otherwise enjoy.
